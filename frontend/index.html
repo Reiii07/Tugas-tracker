@@ -1,12 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tracker Tugas</title>
-    <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tracker Tugas</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    
+  <main>
+    <h1>Tugas Tracker</h1>
+
+    <form id="form-tugas">
+      <input type="text" id="judul" placeholder="Judul tugas" required>
+      <input type="text" id="mata-kuliah" placeholder="Mata kuliah" required>
+      <input type="date" id="tenggat" required>
+      <button type="submit">Tambah Tugas</button>
+    </form>
+
+    <ul id="daftar-tugas"></ul>
+  </main>
+
+  <script src="js/app.js"></script>
 </body>
 </html>
