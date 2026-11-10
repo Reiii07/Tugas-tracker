@@ -34,7 +34,6 @@ if ($method === 'POST') {
 if ($method === 'PUT') {
     $id = (int) ($_GET['id'] ?? 0);
     $data = json_decode(file_get_contents('php://input'), true);
-    $selesai = !empty($data['selesai']) ? 1 : 0;
 
     if ($id <= 0) {
         http_response_code(400);
@@ -42,8 +41,24 @@ if ($method === 'PUT') {
         exit;
     }
 
-    $stmt = $pdo->prepare('UPDATE tugas SET selesai = ? WHERE id = ?');
-    $stmt->execute([$selesai, $id]);
+    if (isset($data['judul'])) {
+        $judul      = trim($data['judul'] ?? '');
+        $mataKuliah = trim($data['mata_kuliah'] ?? '');
+        $tenggat    = $data['tenggat'] ?? '';
+
+        if ($judul === '' || $mataKuliah === '' || $tenggat === '') {
+            http_response_code(400);
+            echo json_encode(['error' => 'judul, mata_kuliah, dan tenggat wajib diisi']);
+            exit;
+        }
+
+        $stmt = $pdo->prepare('UPDATE tugas SET judul = ?, mata_kuliah = ?, tenggat = ? WHERE id = ?');
+        $stmt->execute([$judul, $mataKuliah, $tenggat, $id]);
+    } else {
+        $selesai = !empty($data['selesai']) ? 1 : 0;
+        $stmt = $pdo->prepare('UPDATE tugas SET selesai = ? WHERE id = ?');
+        $stmt->execute([$selesai, $id]);
+    }
 
     echo json_encode(['success' => true]);
     exit;
