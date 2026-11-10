@@ -1,4 +1,4 @@
-# TugasKu
+# Tracker tugas
 Aplikasi web pencatat tugas kuliah.
 
 ## Fitur
