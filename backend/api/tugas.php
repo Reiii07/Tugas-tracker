@@ -2,6 +2,21 @@
 header('Content-Type: application/json; charset=utf-8');
 require __DIR__ . '/../config/koneksi.php';
 
+function validasiTugas($data) {
+    $judul      = trim($data['judul'] ?? '');
+    $kategori   = $data['kategori'] ?? 'kuliah';
+    $mataKuliah = trim($data['mata_kuliah'] ?? '');
+    $tenggat    = $data['tenggat'] ?? '';
+
+    if (!in_array($kategori, ['kuliah', 'pribadi'], true)) return null;
+    if ($judul === '' || $tenggat === '') return null;
+    if ($kategori === 'kuliah' && $mataKuliah === '') return null;
+
+    if ($kategori === 'pribadi') $mataKuliah = null;
+
+    return [$judul, $kategori, $mataKuliah, $tenggat];
+}
+
 $method = $_SERVER['REQUEST_METHOD'];
 
 if ($method === 'GET') {
@@ -12,19 +27,16 @@ if ($method === 'GET') {
 
 if ($method === 'POST') {
     $data = json_decode(file_get_contents('php://input'), true);
+    $nilai = validasiTugas($data);
 
-    $judul      = trim($data['judul'] ?? '');
-    $mataKuliah = trim($data['mata_kuliah'] ?? '');
-    $tenggat    = $data['tenggat'] ?? '';
-
-    if ($judul === '' || $mataKuliah === '' || $tenggat === '') {
+    if ($nilai === null) {
         http_response_code(400);
-        echo json_encode(['error' => 'judul, mata_kuliah, dan tenggat wajib diisi']);
+        echo json_encode(['error' => 'data tugas tidak valid']);
         exit;
     }
 
-    $stmt = $pdo->prepare('INSERT INTO tugas (judul, mata_kuliah, tenggat) VALUES (?, ?, ?)');
-    $stmt->execute([$judul, $mataKuliah, $tenggat]);
+    $stmt = $pdo->prepare('INSERT INTO tugas (judul, kategori, mata_kuliah, tenggat) VALUES (?, ?, ?, ?)');
+    $stmt->execute($nilai);
 
     http_response_code(201);
     echo json_encode(['id' => $pdo->lastInsertId()]);
@@ -42,18 +54,16 @@ if ($method === 'PUT') {
     }
 
     if (isset($data['judul'])) {
-        $judul      = trim($data['judul'] ?? '');
-        $mataKuliah = trim($data['mata_kuliah'] ?? '');
-        $tenggat    = $data['tenggat'] ?? '';
+        $nilai = validasiTugas($data);
 
-        if ($judul === '' || $mataKuliah === '' || $tenggat === '') {
+        if ($nilai === null) {
             http_response_code(400);
-            echo json_encode(['error' => 'judul, mata_kuliah, dan tenggat wajib diisi']);
+            echo json_encode(['error' => 'data tugas tidak valid']);
             exit;
         }
 
-        $stmt = $pdo->prepare('UPDATE tugas SET judul = ?, mata_kuliah = ?, tenggat = ? WHERE id = ?');
-        $stmt->execute([$judul, $mataKuliah, $tenggat, $id]);
+        $stmt = $pdo->prepare('UPDATE tugas SET judul = ?, kategori = ?, mata_kuliah = ?, tenggat = ? WHERE id = ?');
+        $stmt->execute([...$nilai, $id]);
     } else {
         $selesai = !empty($data['selesai']) ? 1 : 0;
         $stmt = $pdo->prepare('UPDATE tugas SET selesai = ? WHERE id = ?');
@@ -79,5 +89,6 @@ if ($method === 'DELETE') {
     echo json_encode(['success' => true]);
     exit;
 }
+
 http_response_code(405);
 echo json_encode(['error' => 'Method tidak didukung']);

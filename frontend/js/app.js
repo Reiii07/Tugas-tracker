@@ -1,14 +1,19 @@
 const API = '../backend/api/tugas.php';
 const daftar = document.getElementById('daftar-tugas');
+let semuaTugas = [];
+let filterAktif = 'semua';
 
 async function muatTugas() {
   const res = await fetch(API);
-  console.log('status:', res.status);
+  semuaTugas = await res.json();
+  terapkanFilter();
+}
 
-  const teks = await res.text();
-  console.log('isi balasan:', teks);
-
-  tampilkan(JSON.parse(teks));
+function terapkanFilter() {
+  const hasil = filterAktif === 'semua'
+    ? semuaTugas
+    : semuaTugas.filter((t) => t.kategori === filterAktif);
+  tampilkan(hasil);
 }
 
 function tampilkan(tugas) {
@@ -22,24 +27,23 @@ function tampilkan(tugas) {
     centang.checked = Number(t.selesai) === 1;
     centang.addEventListener('change', () => ubahSelesai(t.id, centang.checked));
 
+    const teks = document.createElement('span');
     const label = t.kategori === 'pribadi' ? 'Pribadi' : t.mata_kuliah;
     teks.textContent = ` ${t.judul} - ${label} (${t.tenggat}) `;
     if (centang.checked) {
       teks.style.textDecoration = 'line-through';
     }
 
-    const tombolHapus = document.createElement('button');
-    tombolHapus.textContent = 'Hapus';
-    tombolHapus.addEventListener('click', () => hapusTugas(t.id));
-
-    li.append(centang, teks, tombolHapus);
-    daftar.appendChild(li);
-
     const tombolEdit = document.createElement('button');
     tombolEdit.textContent = 'Edit';
     tombolEdit.addEventListener('click', () => mulaiEdit(t));
 
+    const tombolHapus = document.createElement('button');
+    tombolHapus.textContent = 'Hapus';
+    tombolHapus.addEventListener('click', () => hapusTugas(t.id));
+
     li.append(centang, teks, tombolEdit, tombolHapus);
+    daftar.appendChild(li);
   });
 }
 
@@ -59,11 +63,9 @@ async function ubahSelesai(id, selesai) {
 
 async function hapusTugas(id) {
   const res = await fetch(`${API}?id=${id}`, { method: 'DELETE' });
-
   if (res.ok) {
+    if (Number(id) === Number(idEdit)) keluarModeEdit();
     muatTugas();
-  } else {
-    console.log('Gagal menghapus tugas:', await res.text());
   }
 }
 
@@ -77,6 +79,13 @@ function mulaiEdit(t) {
   inputMataKuliah.value = t.mata_kuliah ?? '';
   document.getElementById('tenggat').value = t.tenggat;
   form.querySelector('button[type="submit"]').textContent = 'Simpan perubahan';
+}
+
+function keluarModeEdit() {
+  form.reset();
+  aturMataKuliah();
+  idEdit = null;
+  form.querySelector('button[type="submit"]').textContent = 'Tambah Tugas';
 }
 
 const form = document.getElementById('form-tugas');
@@ -112,15 +121,25 @@ form.addEventListener('submit', async (e) => {
     body: JSON.stringify(data),
   });
 
-  if (res.ok) {
-    form.reset();
-    aturMataKuliah();
-    idEdit = null;
-    form.querySelector('button[type="submit"]').textContent = 'Tambah Tugas';
+ if (res.ok) {
+    keluarModeEdit();
     muatTugas();
-  } else {
-    console.log('Gagal menyimpan tugas:', await res.text());
   }
 });
 
+function tandaiFilterAktif() {
+  document.querySelectorAll('#filter button').forEach((tombol) => {
+    tombol.classList.toggle('aktif', tombol.dataset.filter === filterAktif);
+  });
+}
+
+document.querySelectorAll('#filter button').forEach((tombol) => {
+  tombol.addEventListener('click', () => {
+    filterAktif = tombol.dataset.filter;
+    terapkanFilter();
+    tandaiFilterAktif();
+  });
+});
+
+tandaiFilterAktif();
 muatTugas();
