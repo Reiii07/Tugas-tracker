@@ -22,8 +22,8 @@ function tampilkan(tugas) {
     centang.checked = Number(t.selesai) === 1;
     centang.addEventListener('change', () => ubahSelesai(t.id, centang.checked));
 
-    const teks = document.createElement('span');
-    teks.textContent = ` ${t.judul} - ${t.mata_kuliah} (${t.tenggat}) `;
+    const label = t.kategori === 'pribadi' ? 'Pribadi' : t.mata_kuliah;
+    teks.textContent = ` ${t.judul} - ${label} (${t.tenggat}) `;
     if (centang.checked) {
       teks.style.textDecoration = 'line-through';
     }
@@ -72,19 +72,34 @@ let idEdit = null;
 function mulaiEdit(t) {
   idEdit = t.id;
   document.getElementById('judul').value = t.judul;
-  document.getElementById('mata-kuliah').value = t.mata_kuliah;
+  pilihKategori.value = t.kategori;
+  aturMataKuliah();
+  inputMataKuliah.value = t.mata_kuliah ?? '';
   document.getElementById('tenggat').value = t.tenggat;
   form.querySelector('button[type="submit"]').textContent = 'Simpan perubahan';
 }
 
 const form = document.getElementById('form-tugas');
+const pilihKategori = document.getElementById('kategori');
+const inputMataKuliah = document.getElementById('mata-kuliah');
+
+function aturMataKuliah() {
+  const kuliah = pilihKategori.value === 'kuliah';
+  inputMataKuliah.hidden = !kuliah;
+  inputMataKuliah.required = kuliah;
+  if (!kuliah) inputMataKuliah.value = '';
+}
+
+pilihKategori.addEventListener('change', aturMataKuliah);
+aturMataKuliah();
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
 
   const data = {
     judul: document.getElementById('judul').value,
-    mata_kuliah: document.getElementById('mata-kuliah').value,
+    kategori: pilihKategori.value,
+    mata_kuliah: inputMataKuliah.value,
     tenggat: document.getElementById('tenggat').value,
   };
 
@@ -99,6 +114,7 @@ form.addEventListener('submit', async (e) => {
 
   if (res.ok) {
     form.reset();
+    aturMataKuliah();
     idEdit = null;
     form.querySelector('button[type="submit"]').textContent = 'Tambah Tugas';
     muatTugas();
