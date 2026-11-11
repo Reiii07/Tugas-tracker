@@ -1,3 +1,214 @@
+:root {
+  --ungu: #7c3aed;
+  --ungu-tua: #6d28d9;
+  --ungu-muda: #ede9fe;
+  --latar: #faf8ff;
+  --kartu: #ffffff;
+  --teks: #1f1b2e;
+  --teks-redup: #6b6580;
+  --garis: #ddd6f3;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  background: var(--latar);
+  color: var(--teks);
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  background:
+    radial-gradient(circle at 15% 10%, rgba(124, 58, 237, 0.18), transparent 40%),
+    radial-gradient(circle at 85% 90%, rgba(167, 139, 250, 0.25), transparent 45%),
+    var(--latar);
+  background-attachment: fixed;
+  color: var(--teks);
+}
+
+main {
+  width: 100%;
+  max-width: 640px;
+  margin: 40px auto;
+  padding: 0 16px;
+}
+
+h1 {
+  color: var(--ungu);
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 16px;
+  background: var(--kartu);
+  border: 1px solid var(--garis);
+  border-radius: 12px;
+  justify-content: center;
+}
+
+input[type="text"],
+input[type="date"],
+select {
+  flex: 1 1 160px;
+  padding: 10px 12px;
+  border: 1px solid var(--garis);
+  border-radius: 8px;
+  background: var(--kartu);
+  color: var(--teks);
+  font: inherit;
+}
+
+input:focus,
+select:focus {
+  outline: 2px solid var(--ungu);
+  outline-offset: 1px;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+form button[type="submit"] {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  background: var(--ungu);
+  color: white;
+  font-weight: 600;
+}
+
+form button[type="submit"]:hover {
+  background: var(--ungu-tua);
+}
+
+#filter {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 20px 0;
+}
+
+#filter button {
+  padding: 8px 18px;
+  border: 1px solid var(--garis);
+  border-radius: 999px;
+  background: var(--kartu);
+  color: var(--teks-redup);
+}
+
+#filter button:hover {
+  border-color: var(--ungu);
+  color: var(--ungu);
+}
+
 #filter button.aktif {
-  font-weight: bold;
+  background: var(--ungu);
+  border-color: var(--ungu);
+  color: white;
+  font-weight: 600;
+}
+
+#daftar-tugas {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#daftar-tugas li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: var(--kartu);
+  border: 1px solid var(--garis);
+  border-radius: 12px;
+}
+
+#daftar-tugas li span {
+  flex: 1;
+}
+
+#daftar-tugas input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--ungu);
+}
+
+#daftar-tugas li button {
+  padding: 6px 12px;
+  border: 1px solid var(--garis);
+  border-radius: 8px;
+  background: var(--kartu);
+  color: var(--teks-redup);
+}
+
+#daftar-tugas li button:hover {
+  border-color: var(--ungu);
+  color: var(--ungu);
+}
+
+#daftar-tugas li.selesai {
+  background: var(--ungu-muda);
+  border-color: var(--ungu-muda);
+}
+
+#daftar-tugas li.selesai span {
+  color: var(--teks-redup);
+}
+
+form {
+  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.08);
+}
+
+#daftar-tugas li {
+  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+#daftar-tugas li:hover {
+  transform: translateY(-2px);
+  border-color: var(--ungu);
+  box-shadow: 0 8px 20px rgba(124, 58, 237, 0.18);
+}
+
+#daftar-tugas li button,
+#filter button,
+form button[type="submit"] {
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#daftar-tugas li button:hover {
+  background: var(--ungu);
+  border-color: var(--ungu);
+  color: white;
+}
+
+#daftar-tugas li button:last-of-type:hover {
+  background: #dc2626;
+  border-color: #dc2626;
+}
+
+#filter button:hover {
+  background: var(--ungu-muda);
+  border-color: var(--ungu);
+  color: var(--ungu);
+}
+
+#filter button.aktif:hover {
+  background: var(--ungu-tua);
+  color: white;
+}
+
+form button[type="submit"]:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(124, 58, 237, 0.35);
 }

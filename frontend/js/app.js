@@ -3,6 +3,17 @@ const daftar = document.getElementById('daftar-tugas');
 let semuaTugas = [];
 let filterAktif = 'semua';
 
+function formatTanggal(teks) {
+  const [tahun, bulan, hari] = teks.split('-').map(Number);
+  const tanggal = new Date(tahun, bulan - 1, hari);
+
+  return tanggal.toLocaleDateString('id-ID', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
+}
+
 async function muatTugas() {
   const res = await fetch(API);
   semuaTugas = await res.json();
@@ -29,9 +40,9 @@ function tampilkan(tugas) {
 
     const teks = document.createElement('span');
     const label = t.kategori === 'pribadi' ? 'Pribadi' : t.mata_kuliah;
-    teks.textContent = ` ${t.judul} - ${label} (${t.tenggat}) `;
+    teks.textContent = ` ${t.judul} - ${label} (${formatTanggal(t.tenggat)}) `;
     if (centang.checked) {
-      teks.style.textDecoration = 'line-through';
+      li.classList.add('selesai');
     }
 
     const tombolEdit = document.createElement('button');
@@ -63,9 +74,12 @@ async function ubahSelesai(id, selesai) {
 
 async function hapusTugas(id) {
   const res = await fetch(`${API}?id=${id}`, { method: 'DELETE' });
+
   if (res.ok) {
     if (Number(id) === Number(idEdit)) keluarModeEdit();
     muatTugas();
+  } else {
+    console.log('Gagal menghapus tugas:', await res.text());
   }
 }
 
@@ -121,9 +135,11 @@ form.addEventListener('submit', async (e) => {
     body: JSON.stringify(data),
   });
 
- if (res.ok) {
+  if (res.ok) {
     keluarModeEdit();
     muatTugas();
+  } else {
+    console.log('Gagal menyimpan tugas:', await res.text());
   }
 });
 
